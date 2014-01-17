@@ -25,6 +25,16 @@ describe('Accelerometer (navigator.accelerometer)', function () {
     });
 
     describe("getCurrentAcceleration", function() {
+        afterEach(function(){
+            // wait between testcases to avoid interference
+            var flag=false;
+            runs(function() {
+                setTimeout(function() {flag = true;}, 500);
+            });
+
+            waitsFor(function() {return flag;}, "flag to be true", Tests.TEST_TIMEOUT);
+        });
+
         it("accelerometer.spec.2 should exist", function() {
             expect(typeof navigator.accelerometer.getCurrentAcceleration).toBeDefined();
             expect(typeof navigator.accelerometer.getCurrentAcceleration == 'function').toBe(true);
@@ -79,10 +89,9 @@ describe('Accelerometer (navigator.accelerometer)', function () {
         });
 
         it("accelerometer.spec.5 success callback Acceleration object should return a recent timestamp", function() {
-            var veryRecently = (new Date()).getTime();
-            // Need to check that dates returned are not vastly greater than a recent time stamp.
-            // In case the timestamps returned are ridiculously high
-            var reasonableTimeLimit = veryRecently + 5000; // 5 seconds from now
+            // Check that timestamp returned is within a reasonable window.
+            var veryRecently = (new Date()).getTime()-1000; // lower bound - 1 second prior
+            var reasonableTimeLimit = veryRecently + 6000;  // upper bound - 5 seconds from now
             var win = jasmine.createSpy().andCallFake(function(a) {
                     expect(a.timestamp).toBeGreaterThan(veryRecently);
                     expect(a.timestamp).toBeLessThan(reasonableTimeLimit);
@@ -108,11 +117,11 @@ describe('Accelerometer (navigator.accelerometer)', function () {
             navigator.accelerometer.clearWatch(id);
         });
 
-        it("accelerometer.spec.2 should exist", function() {
+        it("accelerometer.spec.6 should exist", function() {
             expect(navigator.accelerometer.watchAcceleration).toBeDefined();
             expect(typeof navigator.accelerometer.watchAcceleration == 'function').toBe(true);
         });
-        it("accelerometer.spec.3 success callback should be called with an Acceleration object", function() {
+        it("accelerometer.spec.7 success callback should be called with an Acceleration object", function() {
             var win = jasmine.createSpy().andCallFake(function(a) {
                     expect(a).toBeDefined();
                     expect(a.x).toBeDefined();
@@ -137,7 +146,7 @@ describe('Accelerometer (navigator.accelerometer)', function () {
             });
         });
 
-        it("accelerometer.spec.4 success callback Acceleration object should have (reasonable) values for x, y and z expressed in m/s^2", function() {
+        it("accelerometer.spec.8 success callback Acceleration object should have (reasonable) values for x, y and z expressed in m/s^2", function() {
             var reasonableThreshold = 15;
             var win = jasmine.createSpy().andCallFake(function(a) {
                     expect(a.x).toBeLessThan(reasonableThreshold);
@@ -160,11 +169,10 @@ describe('Accelerometer (navigator.accelerometer)', function () {
             });
         });
 
-        it("accelerometer.spec.5 success callback Acceleration object should return a recent timestamp", function() {
-            var veryRecently = (new Date()).getTime();
-            // Need to check that dates returned are not vastly greater than a recent time stamp.
-            // In case the timestamps returned are ridiculously high
-            var reasonableTimeLimit = veryRecently + 5000; // 5 seconds from now
+        it("accelerometer.spec.9 success callback Acceleration object should return a recent timestamp", function() {
+            // Check that timestamp returned is within a reasonable window.
+            var veryRecently = (new Date()).getTime()-1000; // lower bound - 1 second prior
+            var reasonableTimeLimit = veryRecently + 6000;  // upper bound - 5 seconds from now
             var win = jasmine.createSpy().andCallFake(function(a) {
                     expect(a.timestamp).toBeGreaterThan(veryRecently);
                     expect(a.timestamp).toBeLessThan(reasonableTimeLimit);
@@ -184,7 +192,7 @@ describe('Accelerometer (navigator.accelerometer)', function () {
     });
 
     describe("clearWatch", function() {
-        it("accelerometer.spec.2 should exist", function() {
+        it("accelerometer.spec.10 should exist", function() {
             expect(navigator.accelerometer.clearWatch).toBeDefined();
             expect(typeof navigator.accelerometer.clearWatch == 'function').toBe(true);
         });
